@@ -97,5 +97,3 @@ function BlockListItem({ block }: { block: Block }) {
     </TableRow>
   );
 }
-
-
