@@ -19,20 +19,32 @@ const settings = {
   network: Network.ETH_MAINNET,
 };
 
-const alchemy = new Alchemy(settings);
-
 export default function Home() {
   const [latestBlocks, setLatestBlocks] = useState<Block[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<boolean>(false);
+  const [alchemy, setAlchemy] = useState<Alchemy | null>(null);
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_ALCHEMY_API_KEY) {
+      setAlchemy(new Alchemy(settings));
+    } else {
+      console.error("Alchemy API key is missing. Please set NEXT_PUBLIC_ALCHEMY_API_KEY in your environment variables.");
+      setConnectionStatus(false);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchLatestBlocks = async () => {
+      if (!alchemy) {
+        console.warn("Alchemy is not initialized. Skipping fetch.");
+        return;
+      }
       try {
         const latestBlockNumber = await alchemy.core.getBlockNumber();
         const blockNumbers = Array.from({ length: 10 }, (_, i) => latestBlockNumber - i);
 
         const blocks = await Promise.all(
-          blockNumbers.map(number => alchemy.core.getBlock(number))
+          blockNumbers.map(number => alchemy!.core.getBlock(number))
         );
 
         setLatestBlocks(blocks as Block[]);
@@ -44,7 +56,7 @@ export default function Home() {
     };
 
     fetchLatestBlocks();
-  }, []);
+  }, [alchemy]);
 
   return (
     <div className="container mx-auto p-4">
@@ -97,4 +109,3 @@ function BlockListItem({ block }: { block: Block }) {
     </TableRow>
   );
 }
-
