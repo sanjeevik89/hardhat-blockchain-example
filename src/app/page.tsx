@@ -28,7 +28,7 @@ export default function Home() {
     if (process.env.NEXT_PUBLIC_ALCHEMY_API_KEY) {
       setAlchemy(new Alchemy(settings));
     } else {
-      console.error("Alchemy API key is missing. Please set NEXT_PUBLIC_ALCHEMY_API_KEY in your environment variables.");
+      console.error("Alchemy API key is missing. Please set NEXT_PUBLIC_ALCHEMY_API_KEY in your environment variables. Ensure you have also set the key in .env");
       setConnectionStatus(false);
     }
   }, []);
@@ -55,7 +55,9 @@ export default function Home() {
       }
     };
 
-    fetchLatestBlocks();
+    if (alchemy) {
+      fetchLatestBlocks();
+    }
   }, [alchemy]);
 
   return (
@@ -109,3 +111,4 @@ function BlockListItem({ block }: { block: Block }) {
     </TableRow>
   );
 }
+
