@@ -1,4 +1,4 @@
-# Firebase Studio
+# Simple Block chain project using hardhat
 
 This is a NextJS starter in Firebase Studio.
 
